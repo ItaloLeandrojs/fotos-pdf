@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Junta fotos num PDF leve, direto no navegador. As fotos não saem do seu aparelho." />
+    <meta name="theme-color" content="#FAFAF9" />
+    <title>Fotos em PDF</title>
+    <link rel="icon" type="image/svg+xml" href="/icone.svg" />
+    <link rel="preload" href="/fontes/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <header class="topo">
+      <div class="marca">
+        <svg class="logo" viewBox="0 0 256 256" aria-hidden="true">
+          <rect width="256" height="256" rx="56" fill="currentColor" />
+          <g fill="#fff">
+            <rect x="48" y="156" width="76" height="40" rx="6" /><rect x="132" y="156" width="76" height="40" rx="6" />
+            <rect x="48" y="108" width="34" height="40" rx="6" /><rect x="90" y="108" width="76" height="40" rx="6" /><rect x="174" y="108" width="34" height="40" rx="6" />
+            <rect x="48" y="60" width="76" height="40" rx="6" /><rect x="132" y="60" width="76" height="40" rx="6" />
+          </g>
+        </svg>
+        <div>
+          <h1>Fotos em PDF</h1>
+          <p>Junta as fotos da obra num PDF leve. Nada sai do seu aparelho.</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="area">
+      <section class="fotos" aria-labelledby="t-fotos">
+        <h2 id="t-fotos" class="sr-only">Fotos, na ordem do PDF</h2>
+
+        <input type="file" id="escolher" class="sr-only" accept="image/*,.heic,.heif" multiple />
+        <label class="soltar" id="soltar" for="escolher">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M12 15V4m0 0-4 4m4-4 4 4" /></svg>
+          <strong id="soltar-titulo">Arraste as fotos para cá</strong>
+          <span>ou toque para escolher. JPG, PNG, HEIC do iPhone, quantas quiser.</span>
+        </label>
+
+        <div class="barra" id="barra" hidden>
+          <p class="contagem" id="contagem" aria-live="polite"></p>
+          <div class="barra-acoes">
+            <button type="button" class="btn btn-sec" id="mais">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>Adicionar
+            </button>
+            <button type="button" class="btn btn-fantasma" id="por-data">Ordenar por data</button>
+            <button type="button" class="btn btn-fantasma" id="por-nome">Ordenar por nome</button>
+            <button type="button" class="btn btn-fantasma" id="limpar">Limpar tudo</button>
+          </div>
+        </div>
+        <p class="erro" id="erro" role="alert" hidden></p>
+        <p class="dica" id="dica" hidden>Arraste uma foto para mudar a ordem. No teclado: setas escolhem a foto, Alt + setas mudam a ordem, R gira e Delete tira.</p>
+        <ol class="grade" id="grade"></ol>
+      </section>
+
+      <aside class="painel" aria-labelledby="t-pdf">
+        <h2 id="t-pdf">Seu PDF</h2>
+
+        <fieldset class="grupo">
+          <legend>Fotos por folha</legend>
+          <div class="seg" id="seg-pagina">
+            <label><input type="radio" name="pagina" value="1" checked /><span>1</span></label>
+            <label><input type="radio" name="pagina" value="2" /><span>2</span></label>
+            <label><input type="radio" name="pagina" value="4" /><span>4</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="grupo">
+          <legend>Tamanho do arquivo</legend>
+          <div class="seg" id="seg-qualidade">
+            <label><input type="radio" name="qualidade" value="menor" /><span>Menor</span></label>
+            <label><input type="radio" name="qualidade" value="equilibrado" checked /><span>Equilibrado</span></label>
+            <label><input type="radio" name="qualidade" value="maxima" /><span>Máxima</span></label>
+          </div>
+          <p class="nota" id="nota-qualidade"></p>
+        </fieldset>
+
+        <div class="grupo">
+          <label class="rotulo" for="nome">Nome do arquivo</label>
+          <div class="campo-nome">
+            <input type="text" id="nome" autocomplete="off" spellcheck="false" />
+            <span aria-hidden="true">.pdf</span>
+          </div>
+        </div>
+
+        <div class="gerar-caixa">
+          <button type="button" class="btn btn-prim btn-grande" id="gerar" disabled>Gerar PDF</button>
+          <div class="progresso" id="progresso" hidden>
+            <div class="trilho"><div class="cheio" id="cheio"></div></div>
+            <p id="progresso-texto" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="resultado" id="resultado" hidden role="status">
+          <p class="res-titulo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+            <span id="res-nome"></span>
+          </p>
+          <p class="res-num" id="res-num"></p>
+          <a class="btn btn-sec" id="baixar-de-novo" href="#" download>Baixar de novo</a>
+        </div>
+
+        <p class="rodape">As fotos são lidas e juntadas no seu navegador. Nada é enviado para a internet.</p>
+      </aside>
+    </main>
+
+    <div class="cobrir" id="cobrir" aria-hidden="true"><span>Solte as fotos</span></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
