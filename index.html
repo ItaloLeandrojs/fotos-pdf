@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex" />
-    <meta name="description" content="Junta fotos num PDF leve, direto no navegador. As fotos não saem do seu aparelho." />
+    <meta name="description" content="Junta fotos num PDF leve ou vários PDFs num só, direto no navegador. Os arquivos não saem do seu aparelho." />
     <meta name="theme-color" content="#FAFAF9" />
     <title>Fotos em PDF</title>
     <link rel="icon" type="image/svg+xml" href="/icone.svg" />
@@ -23,16 +23,21 @@
         </svg>
         <div>
           <h1>Fotos em PDF</h1>
-          <p>Junta as fotos da obra num PDF leve. Nada sai do seu aparelho.</p>
+          <p>Junta as fotos da obra num PDF leve, ou vários PDFs num só. Nada sai do seu aparelho.</p>
         </div>
+      </div>
+      <div class="abas" role="tablist" aria-label="O que você quer fazer">
+        <button type="button" class="aba" role="tab" id="aba-fotos" aria-controls="painel-fotos" aria-selected="true">Fotos em PDF</button>
+        <button type="button" class="aba" role="tab" id="aba-juntar" aria-controls="painel-juntar" aria-selected="false" tabindex="-1">Juntar PDFs</button>
       </div>
     </header>
 
-    <main class="area">
+    <main>
+      <div class="area" id="painel-fotos" role="tabpanel" aria-labelledby="aba-fotos">
       <section class="fotos" aria-labelledby="t-fotos">
         <h2 id="t-fotos" class="sr-only">Fotos, na ordem do PDF</h2>
 
-        <input type="file" id="escolher" class="sr-only" accept="image/*,.heic,.heif" multiple />
+        <input type="file" id="escolher" class="sr-only" aria-label="Escolher fotos" accept="image/*,.heic,.heif" multiple />
         <label class="soltar" id="soltar" for="escolher">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M12 15V4m0 0-4 4m4-4 4 4" /></svg>
           <strong id="soltar-titulo">Arraste as fotos para cá</strong>
@@ -104,6 +109,69 @@
 
         <p class="rodape">As fotos são lidas e juntadas no seu navegador. Nada é enviado para a internet.</p>
       </aside>
+      </div>
+
+      <div class="area" id="painel-juntar" role="tabpanel" aria-labelledby="aba-juntar" hidden>
+      <section class="fotos" id="j-secao" aria-labelledby="j-t-lista">
+        <h2 id="j-t-lista" class="sr-only">PDFs, na ordem em que vão ser juntados</h2>
+
+        <input type="file" id="j-escolher" class="sr-only" aria-label="Escolher PDFs" accept="application/pdf,.pdf" multiple />
+        <label class="soltar" for="j-escolher">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M12 15V4m0 0-4 4m4-4 4 4" /></svg>
+          <strong id="j-soltar-titulo">Arraste os PDFs para cá</strong>
+          <span>ou toque para escolher. Quantos quiser, de qualquer tamanho de folha.</span>
+        </label>
+
+        <div class="barra" id="j-barra" hidden>
+          <p class="contagem" id="j-contagem" aria-live="polite"></p>
+          <div class="barra-acoes">
+            <button type="button" class="btn btn-sec" id="j-mais">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>Adicionar
+            </button>
+            <button type="button" class="btn btn-fantasma" id="j-por-nome">Ordenar por nome</button>
+            <button type="button" class="btn btn-fantasma" id="j-limpar">Limpar tudo</button>
+          </div>
+        </div>
+        <p class="erro" id="j-erro" role="alert" hidden></p>
+        <ol class="docs" id="j-lista"></ol>
+        <p class="sr-only" id="j-mover" aria-live="polite"></p>
+      </section>
+
+      <aside class="painel" aria-labelledby="j-t-pdf">
+        <h2 id="j-t-pdf">PDF juntado</h2>
+
+        <p class="nota">Arraste para mudar a ordem, ou use as setas de cada arquivo. As folhas entram como são, sem perder qualidade.</p>
+
+        <div class="grupo">
+          <label class="rotulo" for="j-nome">Nome do arquivo</label>
+          <div class="campo-nome">
+            <input type="text" id="j-nome" autocomplete="off" spellcheck="false" />
+            <span aria-hidden="true">.pdf</span>
+          </div>
+        </div>
+
+        <p class="aviso" id="j-aviso" hidden>Tem PDF assinado na lista. O selo continua aparecendo, mas a assinatura digital perde a validade no PDF juntado. Guarde o original.</p>
+
+        <div class="gerar-caixa">
+          <button type="button" class="btn btn-prim btn-grande" id="j-gerar" disabled>Juntar PDFs</button>
+          <div class="progresso" id="j-progresso" hidden>
+            <div class="trilho"><div class="cheio" id="j-cheio"></div></div>
+            <p id="j-progresso-texto" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="resultado" id="j-resultado" hidden role="status">
+          <p class="res-titulo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+            <span id="j-res-nome"></span>
+          </p>
+          <p class="res-num" id="j-res-num"></p>
+          <a class="btn btn-sec" id="j-baixar" href="#" download>Baixar de novo</a>
+        </div>
+
+        <p class="rodape">Os PDFs são juntados no seu navegador. Nada é enviado para a internet.</p>
+      </aside>
+      </div>
     </main>
 
     <div class="cobrir" id="cobrir" aria-hidden="true"><span>Solte as fotos</span></div>

@@ -100,11 +100,20 @@ export function tamanhoTexto(bytes: number): string {
 }
 
 /** Nome de arquivo seguro, sempre terminando em .pdf */
-export function nomeArquivo(nome: string, hoje = new Date()): string {
+export function nomeArquivo(nome: string, hoje = new Date(), padrao = 'fotos'): string {
   const limpo = nome.trim().replace(/\.pdf$/i, '').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim();
   if (limpo) return `${limpo}.pdf`;
   const d = hoje;
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
-  return `fotos ${dd}-${mm}-${d.getFullYear()}.pdf`;
+  return `${padrao} ${dd}-${mm}-${d.getFullYear()}.pdf`;
+}
+
+/** Nomes em ordem humana: "2 planta" antes de "10 memorial". */
+export function porNome(a: { name: string }, b: { name: string }): number {
+  return a.name.localeCompare(b.name, 'pt-BR', { numeric: true });
+}
+
+export function ehPdf(f: { name: string; type: string }): boolean {
+  return f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
 }

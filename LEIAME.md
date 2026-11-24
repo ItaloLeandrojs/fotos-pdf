@@ -1,10 +1,13 @@
 # Fotos em PDF
 
-Junta fotos num PDF A4 leve, direto no navegador. As fotos não saem do aparelho: são lidas, reduzidas e juntadas no próprio navegador, sem servidor.
+Duas abas, tudo direto no navegador, sem servidor (nenhum arquivo sai do aparelho):
+
+- **Fotos em PDF**: junta fotos num PDF A4 leve.
+- **Juntar PDFs**: junta vários PDFs num só, sem perder qualidade. Endereço direto: https://italoleandrojs.github.io/fotos-pdf/#juntar
 
 Endereço: https://italoleandrojs.github.io/fotos-pdf/ (com `noindex`, não aparece no Google).
 
-## Como usar
+## Como usar: Fotos em PDF
 
 1. Arraste as fotos para a página (ou toque em "Arraste as fotos para cá" / "Adicionar"). Aceita JPG, PNG, WebP e HEIC do iPhone. Ctrl+V também cola uma imagem.
 2. Arrume a ordem arrastando as fotos (no celular: segure um instante e arraste). No teclado: selecione a foto e use Alt + setas; Delete tira a foto.
@@ -26,12 +29,27 @@ Com 2 fotos por folha o Equilibrado deu 3 MB e com 4 por folha deu 2,4 MB, porqu
 
 O tamanho em pixels sai do espaço que a foto ocupa na folha: uma foto nunca é aumentada, e uma foto pequena entra no tamanho dela.
 
+## Como usar: Juntar PDFs
+
+1. Arraste os PDFs (ou toque em "Adicionar"). Entram por ordem de nome ("2" vem antes de "10").
+2. Mude a ordem arrastando (no celular: segure um instante) ou pelas setas. O X tira da lista.
+3. Dê um nome (em branco vira "PDFs juntos DD-MM-AAAA") e clique em Juntar. O arquivo baixa sozinho.
+
+As folhas entram como são: mesmo tamanho (A4, A3, A1), mesmo giro, sem comprimir de novo. O tamanho final fica perto da soma dos arquivos.
+
+- PDF protegido (com senha ou contra alteração) fica de fora, com aviso. Saída: abrir no leitor, imprimir em "Salvar como PDF" e adicionar a cópia.
+- Assinatura digital: o selo continua aparecendo, mas a validade se perde (a tela avisa). Campos preenchidos e selos viram carimbo, senão sumiriam.
+- Camadas do AutoCAD desligadas continuam desligadas. Links entre folhas continuam funcionando; o índice lateral (marcadores) não vem junto.
+- Se um arquivo falhar na hora de juntar, nada é gerado e a tela diz qual foi.
+
+Conferido em 24/11/2026 com 170 PDFs reais (ART, termos, plantas): 721 folhas comparadas ponto a ponto com as originais, nenhuma diferente.
+
 ## Como rodar
 
 ```
 npm install
 npm run dev      # http://localhost:5187/fotos-pdf/ (pela configuração "fotos-pdf" do app)
-npm test         # testes das regras (EXIF, folhas, pixels, nomes)
+npm test         # testes das regras (EXIF, folhas, pixels, nomes, junção de PDFs)
 npm run build    # gera dist/
 ```
 
@@ -39,7 +57,7 @@ Publicar: `npm run publicar` (gera o `dist/` e manda para o ramo `gh-pages`).
 
 ## Bibliotecas
 
-- pdf-lib (MIT): monta o PDF.
+- pdf-lib 1.17.1 (MIT): monta e junta os PDFs. A junção usa um campo interno dela (`traversedObjects`); se atualizar a versão, rode `npm test`.
 - SortableJS (MIT): arrastar para mudar a ordem.
 - heic-to (LGPL-3.0, com libheif): abre HEIC do iPhone. Só é baixada quando aparece uma foto HEIC.
 - Fontes Schibsted Grotesk e IBM Plex Mono (SIL OFL), as mesmas do LS Campo.

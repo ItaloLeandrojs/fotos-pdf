@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "heic-to": "^1.6.7",
-    "pdf-lib": "^1.17.1",
+    "pdf-lib": "1.17.1",
     "sortablejs": "^1.15.7"
   },
   "devDependencies": {

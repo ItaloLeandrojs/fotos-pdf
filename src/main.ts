@@ -1,6 +1,8 @@
 import './estilo.css';
 import Sortable from 'sortablejs';
 import { abrirFoto, ehImagem, type Foto, type Giro } from './imagem';
+import { abaAtual, aoReceberArquivos } from './abas';
+import { adicionarPdfs } from './aba-juntar';
 import { nomeArquivo, tamanhoTexto, type PorPagina, type Qualidade } from './layout';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -88,7 +90,10 @@ async function adicionar(lista: FileList | File[]) {
   const recusados = Array.from(lista).length - arquivos.length;
   esconderErro();
   const avisos: string[] = [];
-  if (recusados) avisos.push(recusados === 1 ? '1 arquivo não é imagem e ficou de fora.' : `${recusados} arquivos não são imagem e ficaram de fora.`);
+  if (recusados) {
+    const temPdf = Array.from(lista).some((f) => /\.pdf$/i.test(f.name));
+    avisos.push(`${recusados === 1 ? '1 arquivo não é imagem e ficou' : `${recusados} arquivos não são imagem e ficaram`} de fora.${temPdf ? ' PDF vai na aba Juntar PDFs.' : ''}`);
+  }
   if (!arquivos.length) {
     if (avisos.length) mostrarErro(avisos.join(' '));
     return;
@@ -316,38 +321,8 @@ el.limpar.addEventListener('click', () => {
   el.escolher.focus();
 });
 
-// arrastar arquivos para qualquer lugar da página
-let profundidade = 0;
-const temArquivos = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes('Files');
-window.addEventListener('dragenter', (e) => {
-  if (!temArquivos(e)) return;
-  e.preventDefault();
-  profundidade++;
-  document.body.classList.add('arrastando');
-});
-window.addEventListener('dragover', (e) => {
-  if (temArquivos(e)) e.preventDefault();
-});
-window.addEventListener('dragleave', (e) => {
-  if (!temArquivos(e)) return;
-  if (--profundidade <= 0) {
-    profundidade = 0;
-    document.body.classList.remove('arrastando');
-  }
-});
-window.addEventListener('drop', (e) => {
-  if (!temArquivos(e)) return;
-  e.preventDefault();
-  profundidade = 0;
-  document.body.classList.remove('arrastando');
-  if (e.dataTransfer?.files.length) adicionar(e.dataTransfer.files);
-});
-
-// colar imagem (Ctrl+V)
-window.addEventListener('paste', (e) => {
-  const arquivos = Array.from(e.clipboardData?.files ?? []);
-  if (arquivos.length) adicionar(arquivos);
-});
+// arquivos soltos na página ou colados vão para a aba aberta
+aoReceberArquivos((arquivos) => (abaAtual() === 'juntar' ? adicionarPdfs(arquivos) : adicionar(arquivos)));
 
 // ---------- opções ----------
 document.querySelectorAll('input[name="pagina"], input[name="qualidade"]').forEach((r) =>
