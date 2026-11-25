@@ -2,7 +2,7 @@
 // Tudo em RGBA, sem DOM: roda no Worker e no Node.
 import { homografia, type Quad } from './geometria';
 
-export type Modo = 'cor' | 'cinza' | 'pb';
+export type Modo = 'original' | 'cor' | 'cinza' | 'pb';
 
 /** Recorta o quadrilátero da foto num retângulo de larg x alt. */
 export function endireitar(foto: Uint8ClampedArray, fw: number, fh: number, q: Quad, larg: number, alt: number): Uint8ClampedArray<ArrayBuffer> {
@@ -99,7 +99,18 @@ function mapaDeLuz(px: Uint8ClampedArray, w: number, h: number): Luz {
     papel[i] = lum[i] > max[i] * 0.55 && lum[i] > geral * 0.22 && cor < 0.22 ? 1 : 0;
   }
   // preenche os buracos com a luz dos vizinhos, do raio pequeno ao grande, e alisa
-  const saida = [r, g, b].map((v) => preencher(v, papel, cols, lins));
+  // a luz muda devagar na folha: alisa bem, para o mapa seguir a iluminação e não o desenho
+  // (senão foto 3x4, carimbo e fundo colorido de documento viram branco)
+  const largo = Math.max(2, Math.round(Math.max(cols, lins) * 0.06));
+  const um = caixa(new Float32Array(n).fill(1), cols, lins, largo);
+  const saida = [r, g, b].map((v) => {
+    const cheio = preencher(v, papel, cols, lins);
+    for (let passo = 0; passo < 2; passo++) {
+      const s = caixa(cheio, cols, lins, largo);
+      for (let i = 0; i < n; i++) cheio[i] = s[i] / um[i];
+    }
+    return cheio;
+  });
   return { cols, lins, bloco, r: saida[0], g: saida[1], b: saida[2] };
 }
 
@@ -143,13 +154,13 @@ function preencher(v: Float32Array, papel: Float32Array, cols: number, lins: num
 }
 
 /** Curva: até PRETO vira preto, de BRANCO para cima vira branco (some a textura do papel). */
-const PRETO = 0.2;
-const BRANCO = 0.88;
+const PRETO = 0.1;
+const BRANCO = 0.92;
 const CURVA = (() => {
   const t = new Uint8ClampedArray(1025);
   for (let i = 0; i <= 1024; i++) {
     const x = (i / 1024) * 1.25;
-    t[i] = 255 * Math.pow(Math.max(0, Math.min(1, (x - PRETO) / (BRANCO - PRETO))), 1.35);
+    t[i] = 255 * Math.pow(Math.max(0, Math.min(1, (x - PRETO) / (BRANCO - PRETO))), 1.2);
   }
   return t;
 })();

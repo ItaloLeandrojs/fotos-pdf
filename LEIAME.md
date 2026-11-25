@@ -50,7 +50,7 @@ Conferido em 24/11/2026 com 170 PDFs reais (ART, termos, plantas): 721 folhas co
 1. No celular, toque em "Tirar foto do documento" (abre a câmera normal, na qualidade cheia). No computador, arraste fotos que já existem.
 2. O site acha as bordas da folha, endireita e limpa. Depois de cada foto da câmera, abre o ajuste: arraste as bolinhas até os cantos do papel (aparece uma lupa) e toque em Pronto. "Foto inteira" usa a foto toda; "Como estava" volta ao que o site achou.
 3. Folha que o site não tem certeza fica marcada com "Confira os cantos". Toque na folha para ajustar.
-4. Escolha a aparência (Colorido, Cinza ou P&B), dê um nome e gere o PDF.
+4. Escolha a aparência (Original, Colorido, Cinza ou P&B), dê um nome e gere o PDF. Original só endireita, sem mexer nas cores: é o melhor para RG, CNH e foto.
 
 Como funciona (tudo em `src/escaner/`, sem biblioteca de imagem):
 - `bordas.ts`: acha a folha numa cópia de 480 px. Bordas por gradiente em brilho e cor, retas por votação, todos os quadriláteros possíveis e nota pelo quanto os 4 lados aparecem na foto. A borda da própria foto também vale como lado (folha que passou da foto).

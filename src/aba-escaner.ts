@@ -68,6 +68,7 @@ const el = {
 const cantos = Array.from(document.querySelectorAll<HTMLButtonElement>('#e-editor .canto'));
 
 const NOTAS: Record<Modo, string> = {
+  original: 'Só endireita e corta o fundo, sem mexer nas cores. Melhor para RG, CNH, foto e papel colorido.',
   cor: 'Papel branco e letra escura, mantendo as cores de carimbo, logo e assinatura.',
   cinza: 'Sem cor. Bom para imprimir.',
   pb: 'Só preto e branco, como um scanner de escritório. O arquivo mais leve.',
@@ -84,7 +85,7 @@ let modo: Modo = lerModo();
 function lerModo(): Modo {
   try {
     const m = localStorage.getItem('fotos-pdf:escaner');
-    return m === 'cinza' || m === 'pb' ? m : 'cor';
+    return m === 'original' || m === 'cinza' || m === 'pb' ? m : 'cor';
   } catch {
     return 'cor';
   }
@@ -559,7 +560,7 @@ el.gerar.addEventListener('click', async () => {
       } else {
         const { c, ctx } = novoCanvas(m.larg, m.alt);
         ctx.putImageData(new ImageData(new Uint8ClampedArray(r.buffer as ArrayBuffer), m.larg, m.alt), 0, 0);
-        const blob = await paraBlob(c, modoPdf === 'cinza' ? 0.78 : 0.8);
+        const blob = await paraBlob(c, modoPdf === 'original' ? 0.85 : modoPdf === 'cinza' ? 0.78 : 0.8);
         c.width = c.height = 0;
         folhas.push({ tipo: 'jpg' as const, bytes: new Uint8Array(await blob.arrayBuffer()), larg: m.larg, alt: m.alt, razao: m.razao });
       }

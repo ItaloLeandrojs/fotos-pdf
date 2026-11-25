@@ -6,7 +6,7 @@ import { endireitar, limpar, pretoEBranco, type Modo } from './limpar';
 export type { Achado, Modo, Quad };
 
 /** Lado maior da folha pronta, em pixels: A4 a 200 dpi (colorido e cinza) ou 300 dpi (preto e branco, que é leve). */
-export const LADO_FOLHA: Record<Modo, number> = { cor: 2339, cinza: 2339, pb: 3508 };
+export const LADO_FOLHA: Record<Modo, number> = { original: 2339, cor: 2339, cinza: 2339, pb: 3508 };
 
 /** Giro de 90 graus no sentido do relógio, k vezes: é só trocar qual canto é o de cima. */
 export function girar(q: Quad, k: number): Quad {
@@ -37,6 +37,7 @@ export interface PedidoFolha {
 
 export function fazerFolha(p: PedidoFolha): Uint8ClampedArray<ArrayBuffer> | Uint8Array<ArrayBuffer> {
   const px = endireitar(p.foto, p.fw, p.fh, girar(p.quad, p.giro), p.larg, p.alt);
+  if (p.modo === 'original') return px; // só endireita: foto, RG, papel colorido
   if (p.modo !== 'pb') {
     limpar(px, p.larg, p.alt, p.modo);
     return px;
