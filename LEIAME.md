@@ -4,6 +4,7 @@ Duas abas, tudo direto no navegador, sem servidor (nenhum arquivo sai do aparelh
 
 - **Fotos em PDF**: junta fotos num PDF A4 leve.
 - **Juntar PDFs**: junta vários PDFs num só, sem perder qualidade. Endereço direto: https://italoleandrojs.github.io/fotos-pdf/#juntar
+- **Escanear**: foto de papel vira folha reta e limpa, e as folhas viram um PDF A4. Endereço direto: https://italoleandrojs.github.io/fotos-pdf/#escanear
 
 Endereço: https://italoleandrojs.github.io/fotos-pdf/ (com `noindex`, não aparece no Google).
 
@@ -44,12 +45,29 @@ As folhas entram como são: mesmo tamanho (A4, A3, A1), mesmo giro, sem comprimi
 
 Conferido em 24/11/2026 com 170 PDFs reais (ART, termos, plantas): 721 folhas comparadas ponto a ponto com as originais, nenhuma diferente.
 
+## Como usar: Escanear
+
+1. No celular, toque em "Tirar foto do documento" (abre a câmera normal, na qualidade cheia). No computador, arraste fotos que já existem.
+2. O site acha as bordas da folha, endireita e limpa. Depois de cada foto da câmera, abre o ajuste: arraste as bolinhas até os cantos do papel (aparece uma lupa) e toque em Pronto. "Foto inteira" usa a foto toda; "Como estava" volta ao que o site achou.
+3. Folha que o site não tem certeza fica marcada com "Confira os cantos". Toque na folha para ajustar.
+4. Escolha a aparência (Colorido, Cinza ou P&B), dê um nome e gere o PDF.
+
+Como funciona (tudo em `src/escaner/`, sem biblioteca de imagem):
+- `bordas.ts`: acha a folha numa cópia de 480 px. Bordas por gradiente em brilho e cor, retas por votação, todos os quadriláteros possíveis e nota pelo quanto os 4 lados aparecem na foto. A borda da própria foto também vale como lado (folha que passou da foto).
+- `limpar.ts`: tira a perspectiva, estima a luz do papel em blocos (ignorando foto, faixa colorida e letra grossa) e divide; P&B por limiar local, guardado em 1 bit.
+- `pdf-escaner.ts`: A4 ocupa a página inteira; outro tamanho (nota, RG) fica centralizado.
+- As contas rodam num Worker, para a tela não travar.
+
+Medido em 25/11/2026 com 280 fotos sintéticas de papel (7 tipos de mesa, sombra, dedo, objetos) com os cantos conhecidos: 95,7% e 93,6% (fotos inéditas) com os 4 cantos certos (erro menor que 1,5% da foto). As erradas quase sempre ficam marcadas para conferir. Difícil: faixa escura no topo da folha em mesa escura, mesa quase branca, e folha que passa da borda da foto (23 de 33 certas).
+
+Tamanho: 8 folhas deram 1,2 MB em Colorido e 202 KB em P&B. Colorido e Cinza saem a 200 dpi; P&B a 300 dpi.
+
 ## Como rodar
 
 ```
 npm install
 npm run dev      # http://localhost:5187/fotos-pdf/ (pela configuração "fotos-pdf" do app)
-npm test         # testes das regras (EXIF, folhas, pixels, nomes, junção de PDFs)
+npm test         # testes das regras (EXIF, folhas, pixels, nomes, junção de PDFs, escâner)
 npm run build    # gera dist/
 ```
 

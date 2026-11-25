@@ -3,6 +3,7 @@ import Sortable from 'sortablejs';
 import { abrirFoto, ehImagem, type Foto, type Giro } from './imagem';
 import { abaAtual, aoReceberArquivos } from './abas';
 import { adicionarPdfs } from './aba-juntar';
+import { adicionarFotosDocumento } from './aba-escaner';
 import { nomeArquivo, tamanhoTexto, type PorPagina, type Qualidade } from './layout';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -322,7 +323,12 @@ el.limpar.addEventListener('click', () => {
 });
 
 // arquivos soltos na página ou colados vão para a aba aberta
-aoReceberArquivos((arquivos) => (abaAtual() === 'juntar' ? adicionarPdfs(arquivos) : adicionar(arquivos)));
+aoReceberArquivos((arquivos) => {
+  const aba = abaAtual();
+  if (aba === 'juntar') adicionarPdfs(arquivos);
+  else if (aba === 'escanear') adicionarFotosDocumento(arquivos);
+  else adicionar(arquivos);
+});
 
 // ---------- opções ----------
 document.querySelectorAll('input[name="pagina"], input[name="qualidade"]').forEach((r) =>

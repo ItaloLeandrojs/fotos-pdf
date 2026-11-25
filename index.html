@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex" />
-    <meta name="description" content="Junta fotos num PDF leve ou vários PDFs num só, direto no navegador. Os arquivos não saem do seu aparelho." />
+    <meta name="description" content="Junta fotos num PDF leve, vários PDFs num só, ou escaneia documento pela câmera, direto no navegador. Os arquivos não saem do seu aparelho." />
     <meta name="theme-color" content="#FAFAF9" />
     <title>Fotos em PDF</title>
     <link rel="icon" type="image/svg+xml" href="/icone.svg" />
@@ -23,12 +23,13 @@
         </svg>
         <div>
           <h1>Fotos em PDF</h1>
-          <p>Junta as fotos da obra num PDF leve, ou vários PDFs num só. Nada sai do seu aparelho.</p>
+          <p>Fotos da obra num PDF leve, vários PDFs num só, ou documento escaneado pela câmera. Nada sai do seu aparelho.</p>
         </div>
       </div>
       <div class="abas" role="tablist" aria-label="O que você quer fazer">
         <button type="button" class="aba" role="tab" id="aba-fotos" aria-controls="painel-fotos" aria-selected="true">Fotos em PDF</button>
         <button type="button" class="aba" role="tab" id="aba-juntar" aria-controls="painel-juntar" aria-selected="false" tabindex="-1">Juntar PDFs</button>
+        <button type="button" class="aba" role="tab" id="aba-escanear" aria-controls="painel-escanear" aria-selected="false" tabindex="-1">Escanear</button>
       </div>
     </header>
 
@@ -172,7 +173,106 @@
         <p class="rodape">Os PDFs são juntados no seu navegador. Nada é enviado para a internet.</p>
       </aside>
       </div>
+
+      <div class="area" id="painel-escanear" role="tabpanel" aria-labelledby="aba-escanear" hidden>
+      <section class="fotos" id="e-secao" aria-labelledby="e-t-lista">
+        <h2 id="e-t-lista" class="sr-only">Folhas escaneadas, na ordem do PDF</h2>
+
+        <input type="file" id="e-camera" class="sr-only" aria-labelledby="e-camera-texto" accept="image/*" capture="environment" />
+        <label class="btn btn-prim btn-grande so-toque camera" for="e-camera">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5zM12 16a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" /></svg>
+          <span id="e-camera-texto">Tirar foto do documento</span>
+        </label>
+        <input type="file" id="e-escolher" class="sr-only" aria-label="Escolher fotos do documento" accept="image/*,.heic,.heif" multiple />
+        <label class="soltar" for="e-escolher">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M12 15V4m0 0-4 4m4-4 4 4" /></svg>
+          <strong id="e-soltar-titulo">Arraste as fotos do documento para cá</strong>
+          <span>ou toque para escolher fotos que já tem. Uma foto por folha: o site acha as bordas, endireita e limpa.</span>
+        </label>
+
+        <div class="barra" id="e-barra" hidden>
+          <p class="contagem" id="e-contagem" aria-live="polite"></p>
+          <div class="barra-acoes">
+            <button type="button" class="btn btn-sec" id="e-mais">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>Adicionar
+            </button>
+            <button type="button" class="btn btn-fantasma" id="e-limpar">Limpar tudo</button>
+          </div>
+        </div>
+        <p class="erro" id="e-erro" role="alert" hidden></p>
+        <p class="dica" id="e-dica" hidden>Toque na folha para ajustar os cantos. Arraste para mudar a ordem, ou use as setas.</p>
+        <ol class="grade grade-pag" id="e-grade"></ol>
+        <p class="sr-only" id="e-mover" aria-live="polite"></p>
+      </section>
+
+      <aside class="painel" aria-labelledby="e-t-pdf">
+        <h2 id="e-t-pdf">Documento</h2>
+
+        <fieldset class="grupo">
+          <legend>Aparência</legend>
+          <div class="seg">
+            <label><input type="radio" name="e-modo" value="cor" checked /><span>Colorido</span></label>
+            <label><input type="radio" name="e-modo" value="cinza" /><span>Cinza</span></label>
+            <label><input type="radio" name="e-modo" value="pb" /><span>P&amp;B</span></label>
+          </div>
+          <p class="nota" id="e-nota-modo"></p>
+        </fieldset>
+
+        <div class="grupo">
+          <label class="rotulo" for="e-nome">Nome do arquivo</label>
+          <div class="campo-nome">
+            <input type="text" id="e-nome" autocomplete="off" spellcheck="false" />
+            <span aria-hidden="true">.pdf</span>
+          </div>
+        </div>
+
+        <div class="gerar-caixa">
+          <button type="button" class="btn btn-prim btn-grande" id="e-gerar" disabled>Gerar PDF</button>
+          <div class="progresso" id="e-progresso" hidden>
+            <div class="trilho"><div class="cheio" id="e-cheio"></div></div>
+            <p id="e-progresso-texto" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="resultado" id="e-resultado" hidden role="status">
+          <p class="res-titulo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+            <span id="e-res-nome"></span>
+          </p>
+          <p class="res-num" id="e-res-num"></p>
+          <a class="btn btn-sec" id="e-baixar" href="#" download>Baixar de novo</a>
+        </div>
+
+        <p class="rodape">As fotos são endireitadas no seu navegador. Nada é enviado para a internet.</p>
+      </aside>
+      </div>
     </main>
+
+    <dialog class="editor" id="e-editor" aria-labelledby="e-ed-titulo">
+      <div class="ed-topo">
+        <h2 id="e-ed-titulo">Ajuste os cantos da folha</h2>
+        <p>Arraste as bolinhas até os cantos do papel.</p>
+        <p class="aviso" id="e-ed-aviso" hidden></p>
+      </div>
+      <div class="ed-palco">
+        <div class="ed-foto" id="e-ed-foto">
+          <img id="e-ed-img" alt="Foto do documento" draggable="false" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <svg id="e-ed-svg" preserveAspectRatio="none" aria-hidden="true"><polygon id="e-ed-forma" /></svg>
+          <button type="button" class="canto" aria-label="Canto de cima, à esquerda. Use as setas para mover"></button>
+          <button type="button" class="canto" aria-label="Canto de cima, à direita. Use as setas para mover"></button>
+          <button type="button" class="canto" aria-label="Canto de baixo, à direita. Use as setas para mover"></button>
+          <button type="button" class="canto" aria-label="Canto de baixo, à esquerda. Use as setas para mover"></button>
+        </div>
+        <canvas class="lupa" id="e-lupa" width="240" height="240" hidden></canvas>
+      </div>
+      <div class="ed-acoes">
+        <button type="button" class="btn btn-fantasma" id="e-ed-inteira">Foto inteira</button>
+        <button type="button" class="btn btn-fantasma" id="e-ed-auto">Como estava</button>
+        <span class="ed-espaco"></span>
+        <button type="button" class="btn btn-sec" id="e-ed-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-prim" id="e-ed-pronto">Pronto</button>
+      </div>
+    </dialog>
 
     <div class="cobrir" id="cobrir" aria-hidden="true"><span>Solte as fotos</span></div>
 

@@ -27,11 +27,11 @@ export function ehImagem(f: File): boolean {
   return f.type.startsWith('image/') || EXT_OK.test(f.name);
 }
 
-function ehHeic(f: File): boolean {
+export function ehHeic(f: File): boolean {
   return /image\/hei[cf]/i.test(f.type) || EXT_HEIC.test(f.name);
 }
 
-async function deHeic(arquivo: File): Promise<Blob> {
+export async function deHeic(arquivo: File): Promise<Blob> {
   // só baixa o conversor (3 MB) quando aparece uma foto HEIC
   const { heicTo } = await import('heic-to');
   return heicTo({ blob: arquivo, type: 'image/jpeg', quality: 0.92 });
@@ -77,7 +77,7 @@ export async function abrirFoto(arquivo: File): Promise<Foto> {
 }
 
 /** Largura e altura já de pé (os navegadores atuais aplicam o EXIF na <img>). */
-function medidas(b: Blob): Promise<{ larg: number; alt: number }> {
+export function medidas(b: Blob): Promise<{ larg: number; alt: number }> {
   return new Promise((ok, erro) => {
     const url = URL.createObjectURL(b);
     const img = new Image();
@@ -99,7 +99,7 @@ function medidas(b: Blob): Promise<{ larg: number; alt: number }> {
  * Se o navegador não aceitar as opções (Safari antigo), tenta sem elas; quem desenha
  * depois sempre estica para o tamanho pedido, então o resultado é o mesmo.
  */
-async function decodificar(b: Blob, larg?: number, alt?: number): Promise<ImageBitmap> {
+export async function decodificar(b: Blob, larg?: number, alt?: number): Promise<ImageBitmap> {
   const base: ImageBitmapOptions = { imageOrientation: 'from-image' };
   if (larg && alt) {
     try {
@@ -123,7 +123,7 @@ async function decodificar(b: Blob, larg?: number, alt?: number): Promise<ImageB
   }
 }
 
-function novoCanvas(w: number, h: number) {
+export function novoCanvas(w: number, h: number) {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
@@ -134,7 +134,7 @@ function novoCanvas(w: number, h: number) {
   return { c, ctx };
 }
 
-function paraBlob(c: HTMLCanvasElement, q: number): Promise<Blob> {
+export function paraBlob(c: HTMLCanvasElement, q: number): Promise<Blob> {
   return new Promise((ok, erro) =>
     c.toBlob((b) => (b ? ok(b) : erro(new Error('falhou ao gerar o JPEG'))), 'image/jpeg', q),
   );
